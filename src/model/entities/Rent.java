@@ -10,14 +10,16 @@ public class Rent {
     private String model;
     private Date pickupDate;
     private Date returnDate;
-    private Double pricePerHour;
-    private Double pricePerDay;
+    private BigDecimal pricePerHour;
+    private BigDecimal pricePerDay;
     private BigDecimal price;
 
-    public Rent(String model, Date pickupDate, Date returnDate, Double pricePerHour, Double pricePerDay) throws ParseException {
+    public Rent(String model, Date pickupDate, Date returnDate, BigDecimal pricePerHour, BigDecimal pricePerDay) throws ParseException {
         this.model = model;
         this.pickupDate = pickupDate;
         this.returnDate = returnDate;
+        this.pricePerHour = pricePerHour;
+        this.pricePerDay = pricePerDay;
         this.price = parkingChargeTime();
     }
 
@@ -27,33 +29,51 @@ public class Rent {
         Date data = new Date();
         Date newDate = sdf.parse(sdf.format(returnDate));
         Long diff = TimeUnit.MINUTES.convert((data.getTime() - newDate.getTime()), TimeUnit.MILLISECONDS);
-        BigDecimal hours = valueCalculator(diff);
+        BigDecimal valueToPay = valueCalculator(diff, pricePerHour, pricePerDay);
 
-        System.out.println(diff);
-
-        return hours;
+        return valueToPay;
     }
 
-    public BigDecimal valueCalculator(Long diff){
-        if(diff > 720){
-            System.out.println("Case diary");
+    public BigDecimal valueCalculator(Long diff, BigDecimal pricePerHour, BigDecimal pricePerDay){
+        Long oneHour = 60L;
+        Long totalHours = diff / oneHour;
+        if(diff > 600){
+            return dayCalculator(diff, pricePerDay);
+        } else
+            if(diff % oneHour != 0){
+                return new BigDecimal((totalHours + 1)).multiply(pricePerHour);
+            }
+            else
+        return pricePerHour.multiply(new BigDecimal(totalHours));
+    }
+
+    public BigDecimal dayCalculator(Long diff, BigDecimal pricePerDay){
+        Long minutesInADay = 1440L;
+        Long totalDays = diff / minutesInADay;
+
+        if (diff < minutesInADay){
+            return pricePerDay;
+        } else
+        if(diff % minutesInADay != 0){
+            return new BigDecimal((totalDays + 1)).multiply(pricePerDay);
         }
-        return new BigDecimal(10.00);
-//        if((diff % 60) != 0){
-//            return diff / 60 + 1;
-//        }
-//        else return diff / 60;
+        else return pricePerDay.multiply(new BigDecimal(totalDays));
+
     }
 
-    public Long dayCalculator(Long diff){
-        if(diff < 1200){
-            return 1L;
-        } else
-        if(diff % 1200 != 0){
-            return diff / 1200 + 1;
-        } else
-            System.out.println();
-            return diff / 1200;
+    public BigDecimal getPrice() {
+        return price;
     }
 
+    @Override
+    public String toString() {
+        return "Rent{" +
+                "model='" + model + '\'' +
+                ", pickupDate=" + pickupDate +
+                ", returnDate=" + returnDate +
+                ", pricePerHour=" + pricePerHour +
+                ", pricePerDay=" + pricePerDay +
+                ", price=" + price +
+                '}';
+    }
 }
