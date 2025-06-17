@@ -6,16 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class Rent {
-    private String model;
+public class Invoice {
+    private Vehicle vehicle;
     private Date pickupDate;
     private Date returnDate;
     private BigDecimal pricePerHour;
     private BigDecimal pricePerDay;
     private BigDecimal price;
 
-    public Rent(String model, Date pickupDate, Date returnDate, BigDecimal pricePerHour, BigDecimal pricePerDay) throws ParseException {
-        this.model = model;
+    public Invoice(Vehicle vehicle, Date pickupDate, Date returnDate, BigDecimal pricePerHour, BigDecimal pricePerDay) throws ParseException {
+        this.vehicle = vehicle;
         this.pickupDate = pickupDate;
         this.returnDate = returnDate;
         this.pricePerHour = pricePerHour;
@@ -68,7 +68,7 @@ public class Rent {
     @Override
     public String toString() {
         return "Rent{" +
-                "model='" + model + '\'' +
+                "model='" + vehicle + '\'' +
                 ", pickupDate=" + pickupDate +
                 ", returnDate=" + returnDate +
                 ", pricePerHour=" + pricePerHour +
